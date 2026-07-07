@@ -1,0 +1,39 @@
+
+---
+title: "Evaluación del Naive Bayes - Iris"
+output: html_document
+---
+
+```{r}
+library(e1071)
+
+iris_data <- read.csv("iris.data (1).csv")
+
+set.seed(123)
+muestra <- sample(1:nrow(iris_data),20)
+
+train <- iris_data[-muestra,]
+test <- iris_data[muestra,]
+
+modelo <- naiveBayes(Species~., data=train)
+pred <- predict(modelo,test)
+
+matriz_confusion <- matrix(0,nrow=3,ncol=3,
+ dimnames=list(c("setosa","virginica","versicolor"),
+               c("setosa","virginica","versicolor")))
+
+for(i in 1:nrow(test)){
+  p <- as.character(pred[i])
+  r <- as.character(test$Species[i])
+  matriz_confusion[p,r] <- matriz_confusion[p,r]+1
+}
+
+cat("Observaciones evaluadas:\n")
+data.frame(Real=test$Species, Predicho=pred)
+
+cat("\nMatriz de confusión:\n")
+matriz_confusion
+
+cat("\nExactitud:\n")
+sum(diag(matriz_confusion))/sum(matriz_confusion)
+```
